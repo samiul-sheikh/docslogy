@@ -1,37 +1,39 @@
 import fs from "fs";
 import matter from "gray-matter";
 import path from "path";
-import { remark } from "remark";
-import html from "remark-html";
 
 const postDirectory = path.join(process.cwd(), "docs");
 
-export function getDocuments() {
-  // console.log(postDirectory);
+// Define the type of a single document
+interface Document {
+  id: string;
+  title: string;
+  date: string;
+  parent: string | null;
+  order: number;
+  author: string;
+  category: string;
+  tags: string[];
+}
+
+// Function to get documents with proper type annotations
+export function getDocuments(): Document[] {
   const fileNames = fs.readdirSync(postDirectory);
-  // console.log(fileNames);
+
   const allDocuments = fileNames.map((fileName) => {
     const id = fileName.replace(".md", "");
-    // console.log(id);
     const fullPath = path.join(postDirectory, fileName);
-    // console.log(fullPath);
     const fileContents = fs.readFileSync(fullPath, "utf-8");
-    // console.log(fileContents);
     const matterResult = matter(fileContents);
-    // console.log(matterResult);
+
+    // Ensure matterResult.data is properly typed
+    const data = matterResult.data as Omit<Document, "id">; // Cast to expected structure
+
     return {
       id,
-      ...matterResult.data,
-    };
+      ...data,
+    } as Document; // Ensure return value matches the Document type
   });
-  return allDocuments.sort((a, b) => {
-    if (a.order < b.order) {
-      return -1;
-    }
-    if (a.order > b.order) {
-      return 1;
-    }
-    return 0;
-  });
-  // console.log(allDocuments);
+
+  return allDocuments.sort((a, b) => a.order - b.order);
 }

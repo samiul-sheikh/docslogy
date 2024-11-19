@@ -1,24 +1,8 @@
-// import type { Config } from "tailwindcss";
+import type { Config } from "tailwindcss";
+import typography from "@tailwindcss/typography";
+import aspectRatio from "@tailwindcss/aspect-ratio";
 
-// export default {
-//   content: [
-//     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
-//     "./components/**/*.{js,ts,jsx,tsx,mdx}",
-//     "./app/**/*.{js,ts,jsx,tsx,mdx}",
-//   ],
-//   theme: {
-//     extend: {
-//       colors: {
-//         background: "var(--background)",
-//         foreground: "var(--foreground)",
-//       },
-//     },
-//   },
-//   plugins: [],
-// } satisfies Config;
-
-/** @type {import('tailwindcss').Config} */
-module.exports = {
+const config: Config = {
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -42,11 +26,12 @@ module.exports = {
       "8xl": ["6rem", { lineHeight: "1" }],
       "9xl": ["8rem", { lineHeight: "1" }],
     },
-    typography: require("./typography"),
     extend: {
       colors: {
         lighterDark: "#0F172A",
         dark: "#0B1120",
+        background: "var(--background)",
+        foreground: "var(--foreground)",
       },
       boxShadow: {
         glow: "0 0 4px rgb(0 0 0 / 0.1)",
@@ -70,8 +55,7 @@ module.exports = {
       },
     },
   },
-  plugins: [
-    require("@tailwindcss/typography"),
-    require("@tailwindcss/aspect-ratio"),
-  ],
+  plugins: [typography, aspectRatio],
 };
+
+export default config;

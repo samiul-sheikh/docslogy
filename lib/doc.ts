@@ -1,10 +1,9 @@
 import fs from "fs";
 import matter from "gray-matter";
 import path from "path";
+import { remark } from "remark";
+import html from "remark-html";
 
-const postDirectory = path.join(process.cwd(), "docs");
-
-// Define the type of a single document
 interface Document {
   id: string;
   title: string;
@@ -16,7 +15,13 @@ interface Document {
   tags: string[];
 }
 
-// Function to get documents with proper type annotations
+// Type for the return value of `getDocumentContent`
+interface DocumentContent extends Document {
+  contentHtml: string;
+}
+
+const postDirectory = path.join(process.cwd(), "docs");
+
 export function getDocuments(): Document[] {
   const fileNames = fs.readdirSync(postDirectory);
 
@@ -26,14 +31,34 @@ export function getDocuments(): Document[] {
     const fileContents = fs.readFileSync(fullPath, "utf-8");
     const matterResult = matter(fileContents);
 
-    // Ensure matterResult.data is properly typed
-    const data = matterResult.data as Omit<Document, "id">; // Cast to expected structure
+    // Validate that `matterResult.data` has the expected structure
+    const data = matterResult.data as Omit<Document, "id">;
 
     return {
       id,
       ...data,
-    } as Document; // Ensure return value matches the Document type
+    } as Document;
   });
 
   return allDocuments.sort((a, b) => a.order - b.order);
+}
+
+export function getDocumentContent(id: string): DocumentContent {
+  const fullPath = path.join(postDirectory, `${id}.md`); // Use template literal correctly
+  const fileContents = fs.readFileSync(fullPath, "utf8");
+
+  const matterResult = matter(fileContents);
+
+  // Process the markdown content to HTML
+  const processContent = remark().use(html).processSync(matterResult.content);
+  const contentHtml = processContent.toString();
+
+  // Validate that `matterResult.data` has the expected structure
+  const data = matterResult.data as Omit<Document, "id">;
+
+  return {
+    id,
+    contentHtml,
+    ...data,
+  };
 }

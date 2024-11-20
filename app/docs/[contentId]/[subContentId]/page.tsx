@@ -1,3 +1,5 @@
+import ContentDisplay from "@/components/ContentDisplay";
+
 interface SubContentPageProps {
   params: {
     subContentId: string;
@@ -7,7 +9,7 @@ interface SubContentPageProps {
 const SubContentPage = async ({ params }: SubContentPageProps) => {
   const { subContentId } = await params;
 
-  return <div className="">{subContentId}</div>;
+  return <ContentDisplay id={subContentId} />;
 };
 
 export default SubContentPage;

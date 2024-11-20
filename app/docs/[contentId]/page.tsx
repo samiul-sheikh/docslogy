@@ -1,3 +1,5 @@
+import ContentDisplay from "@/components/ContentDisplay";
+
 interface ContentPageProps {
   params: {
     contentId: string;
@@ -7,7 +9,7 @@ interface ContentPageProps {
 const ContentPage = async ({ params }: ContentPageProps) => {
   const { contentId } = await params;
 
-  return <div className="">{contentId}</div>;
+  return <ContentDisplay id={contentId} />;
 };
 
 export default ContentPage;

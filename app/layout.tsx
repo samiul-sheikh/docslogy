@@ -15,7 +15,7 @@ export default function RootLayout({
 }>) {
   // Fetch and log the documents
   const allDocuments = getDocuments();
-  console.log(allDocuments);
+  // console.log(allDocuments);
 
   return (
     <html lang="en">

@@ -3,17 +3,7 @@ import matter from "gray-matter";
 import path from "path";
 import { remark } from "remark";
 import html from "remark-html";
-
-interface Document {
-  id: string;
-  title: string;
-  date: string;
-  parent: string | null;
-  order: number;
-  author: string;
-  category: string;
-  tags: string[];
-}
+import { Document } from "@/type";
 
 // Type for the return value of `getDocumentContent`
 interface DocumentContent extends Document {

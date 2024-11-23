@@ -1,33 +1,66 @@
-import React from "react";
+"use client";
+import {
+  getDocumentsByAuthor,
+  getDocumentsByCategory,
+  getDocumentsByTag,
+} from "@/utils/doc.util";
 import Link from "next/link";
-
-interface Document {
-  id: string;
-  title: string;
-  date: string;
-  parent: string | null;
-  order: number;
-  author: string;
-  category: string;
-  tags: string[];
-}
+import { Document } from "@/type";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 interface SidebarProps {
   docs: Document[];
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ docs }) => {
-  // Filter root-level documents
-  const roots = docs.filter((doc) => !doc.parent);
+  const pathName = usePathname();
 
-  // Group non-root documents by their parent
-  const nonRoots = docs.reduce((acc, doc) => {
-    if (doc.parent) {
-      acc[doc.parent] = acc[doc.parent] || [];
-      acc[doc.parent].push(doc);
+  const [rootNodes, setRootNodes] = useState<Document[]>([]);
+  const [nonRootNodesGrouped, setNonRootNodesGrouped] = useState<
+    Record<string, Document[]>
+  >({});
+
+  useEffect(() => {
+    let matchedDocs = docs;
+
+    if (pathName.includes("/tags")) {
+      const tag = pathName.split("/")[2];
+      matchedDocs = getDocumentsByTag(docs, tag);
+    } else if (pathName.includes("/authors")) {
+      const author = pathName.split("/")[2];
+      matchedDocs = getDocumentsByAuthor(docs, author);
+    } else if (pathName.includes("/categories")) {
+      const category = pathName.split("/")[2];
+      matchedDocs = getDocumentsByCategory(docs, category);
     }
-    return acc;
-  }, {} as Record<string, Document[]>);
+
+    // Filter root-level documents
+    const roots = matchedDocs.filter((doc) => !doc.parent);
+
+    // Group non-root documents by their parent
+    const nonRoots = matchedDocs.reduce((acc, doc) => {
+      if (doc.parent) {
+        acc[doc.parent] = acc[doc.parent] || [];
+        acc[doc.parent].push(doc);
+      }
+      return acc;
+    }, {} as Record<string, Document[]>);
+
+    const nonRootsKeys = Reflect.ownKeys(nonRoots);
+    nonRootsKeys.forEach((key) => {
+      const foundInRoots = roots.find((root) => root.id === key);
+      if (!foundInRoots) {
+        const foundInDocs = docs.find((doc) => doc.id === key);
+        if (foundInDocs) {
+          roots.push(foundInDocs);
+        }
+      }
+    });
+
+    setRootNodes(roots);
+    setNonRootNodesGrouped(nonRoots);
+  }, [pathName, docs]);
 
   return (
     <nav className="lg:block my-10">
@@ -37,7 +70,7 @@ const Sidebar: React.FC<SidebarProps> = ({ docs }) => {
           <div className="absolute inset-y-0 left-2 w-px bg-zinc-900/10 dark:bg-white/5"></div>
           <div className="absolute left-2 h-6 w-px bg-emerald-500"></div>
           <ul role="list" className="border-l border-transparent">
-            {roots.map((rootNode) => (
+            {rootNodes.map((rootNode) => (
               <li key={rootNode.id} className="relative">
                 <Link
                   aria-current="page"
@@ -46,9 +79,9 @@ const Sidebar: React.FC<SidebarProps> = ({ docs }) => {
                 >
                   <span className="truncate">{rootNode.title}</span>
                 </Link>
-                {nonRoots[rootNode.id] && (
+                {nonRootNodesGrouped[rootNode.id] && (
                   <ul role="list" className="border-l border-transparent">
-                    {nonRoots[rootNode.id].map((subRoot) => (
+                    {nonRootNodesGrouped[rootNode.id].map((subRoot) => (
                       <li key={subRoot.id}>
                         <Link
                           className="flex justify-between gap-2 py-1 pl-7 pr-3 text-sm text-zinc-600 transition hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"

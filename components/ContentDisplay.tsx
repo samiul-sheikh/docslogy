@@ -1,5 +1,5 @@
-import Link from "next/link";
 import Tag from "./Tag";
+import Link from "next/link";
 import { getDocumentContent } from "@/lib/doc";
 
 interface ContentDisplayProps {
@@ -8,14 +8,13 @@ interface ContentDisplayProps {
 
 const ContentDisplay: React.FC<ContentDisplayProps> = ({ id }) => {
   const documentContent = getDocumentContent(id);
-  // console.log("dddd", documentContent);
 
   return (
     <article className="prose dark:prose-invert">
       <h1>{documentContent.title}</h1>
       <div>
         <span>Published On: {documentContent.date}</span> by{" "}
-        <Link href={`/author/${documentContent.author}`}>
+        <Link href={`/authors/${documentContent.author}`}>
           {documentContent.author}
         </Link>{" "}
         under the{" "}

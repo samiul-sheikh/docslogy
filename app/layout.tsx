@@ -13,9 +13,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Fetch and log the documents
   const allDocuments = getDocuments();
-  // console.log(allDocuments);
 
   return (
     <html lang="en">

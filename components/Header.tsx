@@ -2,17 +2,7 @@ import React from "react";
 import Logo from "./Logo";
 import Search from "./Search";
 import Sidebar from "./Sidebar";
-
-interface Document {
-  id: string;
-  title: string;
-  date: string;
-  parent: string | null;
-  order: number;
-  author: string;
-  category: string;
-  tags: string[];
-}
+import { Document } from "@/type";
 
 interface HeaderProps {
   docs: Document[];
@@ -28,7 +18,6 @@ const Header: React.FC<HeaderProps> = ({ docs }) => {
           <Search />
         </div>
       </div>
-      {/* Pass the docs prop to Sidebar */}
       <Sidebar docs={docs} />
     </header>
   );
